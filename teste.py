@@ -1,28 +1,52 @@
-import wx
+import tkinter as tk
 
-class CustomFrame(wx.Frame):
+
+class PopupWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.title("Popup")
+        self.geometry("200x100")
+        self.attributes("-topmost", True)  # Fica sempre no topo
+        self.overrideredirect(True)  # Remove a barra de título
+
+        self.content_label = tk.Label(self, text="Conteúdo reduzido")
+        self.content_label.pack(pady=20)
+
+        self.restore_button = tk.Button(self, text="Voltar", command=self.restore_window)
+        self.restore_button.pack()
+
+    def restore_window(self):
+        self.master.state('normal')  # Restaura a janela principal
+
+
+class MainWindow(tk.Tk):
     def __init__(self):
-        super().__init__(parent=None, title="Janela Personalizada", size=(400, 300))
-        
-        self.panel = wx.Panel(self)
-        
-        self.main_label = wx.StaticText(self.panel, label="Conteúdo principal", pos=(100, 100))
-        
-        reduce_button = wx.Button(self.panel, label="Reduzir", pos=(100, 220), size=(100, 30))
-        reduce_button.Bind(wx.EVT_BUTTON, self.reduce_window)
-        
-        restore_button = wx.Button(self.panel, label="Restaurar", pos=(220, 220), size=(100, 30))
-        restore_button.Bind(wx.EVT_BUTTON, self.restore_window)
-        
-    def reduce_window(self, event):
-        self.SetSize((200, 150))
-        self.main_label.SetLabel("Conteúdo reduzido")
+        super().__init__()
 
-    def restore_window(self, event):
-        self.SetSize((400, 300))
-        self.main_label.SetLabel("Conteúdo principal")
+        self.title("Janela Personalizada")
+        self.geometry("400x300")
 
-app = wx.App()
-frame = CustomFrame()
-frame.Show()
-app.MainLoop()
+        self.content_label = tk.Label(self, text="Conteúdo principal")
+        self.content_label.pack(pady=50)
+
+        self.reduce_button = tk.Button(self, text="Reduzir", command=self.reduce_window)
+        self.reduce_button.pack()
+
+        self.popup = None
+
+    def reduce_window(self):
+        if self.popup is None:
+            self.state('iconic')  # Minimiza a janela principal
+            self.popup = PopupWindow(self)
+            self.popup.geometry("+10+10")  # Define a posição do pop-up no canto superior esquerdo
+            self.popup.protocol("WM_DELETE_WINDOW", self.close_popup)
+
+    def close_popup(self):
+        self.popup.destroy()
+        self.popup = None
+        self.state('normal')  # Restaura a janela principal
+
+
+window = MainWindow()
+window.mainloop()

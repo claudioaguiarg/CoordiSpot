@@ -36,20 +36,35 @@ class App:
             self.label_y.configure(text = self.y)
             self.label_x.after(10, mouse_plot)
 
-        def update_scroll_frame():
+        def update_scroll_frame(index):
             try:
                 self.scroll_frame._desired_width()
             except:
                 pass
+            if index == 0:
+                for i, row in enumerate(self.data):
+                    frame = CTkFrame(self.scroll_frame)
+                    frame.grid(row=i + 1, column=0)
+                    CTkLabel(frame,text=f'{i+1}').grid(row=0, column=0, padx = 10)
 
-            for i, row in enumerate(self.data):
-                CTkLabel(self.scroll_frame,text=f'{i+1}').grid(row=i+1, column=0)
+                    for j, cell in enumerate(row):
+                        entry = CTkEntry(frame, width=65, height=30)
+                        entry.insert('end', cell)
+                        entry.configure(state='readonly')
+                        entry.grid(row=0, column=j+1, padx=2, pady=2)
+                # widgets = self.scroll_frame.winfo_children()
+                # widgets[0].destroy()
+            else:
+                CTkLabel(self.scroll_frame, text=f'{index+1}').grid(row=0, column=0, padx=10)
 
-                for j, cell in enumerate(row):
-                    entry = CTkEntry(self.scroll_frame, width=65, height=30)
+                for j, cell in enumerate(self.data[index]):
+                    entry = CTkEntry(self.scroll_frame_label, width=65, height=30)
                     entry.insert('end', cell)
                     entry.configure(state='readonly')
-                    entry.grid(row=i+1, column=j+1, padx=2, pady=2)
+                    entry.grid(row=0, column=j+1, padx=2, pady=2)
+
+                widgets = self.scroll_frame.winfo_children()
+                widgets[index + 1].destroy()
 
 
         self.frame_master = CTkFrame(self.root, fg_color=self.root._fg_color)
@@ -77,13 +92,12 @@ class App:
         self.scroll_frame.pack()
         update_scroll_frame()
 
-        # Cabeçalho da tabela
-
-
-        header_labels = ['Num', 'Pos x', 'Pos y']
+        self.scroll_frame_label = CTkFrame(self.scroll_frame, width=100, height=100)
+        self.scroll_frame_label.grid(row=0, column=0)
+        header_labels = ['Num      ', 'Pos X       ', 'Pos Y    ']
         for i, label_text in enumerate(header_labels):
-            label = CTkLabel(self.scroll_frame, text=label_text, font=("Arial", 12, "bold"))
-            label.grid(row=0, column=i, padx=2, pady=2)
+            label = CTkLabel(self.scroll_frame_label, text=label_text, font=("Arial", 12, "bold"))
+            label.grid(row=0, column=i, pady = 10)
 
 
 
