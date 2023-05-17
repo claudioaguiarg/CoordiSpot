@@ -7,9 +7,10 @@ from pynput.keyboard import KeyCode
 
 class App:
     def __init__(self):
-        self.root = CTk()
+        self.root = CTk(fg_color=('#171810'))
+        self.root._set_appearance_mode("dark")
         self.root.geometry('300x350')
-        self.root.title('Mouse Plot')
+        self.root.title('CoordiSpot')
         self.root.attributes("-topmost", False)
         self.root.wm_resizable(False, False)
         # self.root.wm_overrideredirect(True)
@@ -22,63 +23,75 @@ class App:
 
         def mouse_plot():
             self.x, self.y = position()
-            self.label_x.configure(text=self.x)
-            self.label_y.configure(text=self.y)
+            self.label_x.configure(text=f'X : {self.x}')
+            self.label_y.configure(text=f'Y : {self.y}')
             self.label_x.after(10, mouse_plot)
 
+        import pyperclip
+        import pyautogui
+
         def on_key_press(key):
-            if isinstance(key, KeyCode):
-                typed = str(key.vk)
-                if typed in '123456789':
-                    entry_num = typed
+            option = self.option_menu.get()
+            if(option == 'Copy mode'):
+                try:
+                    if key.char in '123456789':
+                        entry_num = int(key.char)
 
-                    entryx_attr = f'entryx{entry_num}'
-                    entryy_attr = f'entryy{entry_num}'
+                        entryx_attr = f'entryx{entry_num}'
+                        entryy_attr = f'entryy{entry_num}'
 
-                    entryx = getattr(self, entryx_attr)
-                    entryy = getattr(self, entryy_attr)
+                        entryx = getattr(self, entryx_attr)
+                        entryy = getattr(self, entryy_attr)
 
-                    varx = entryx.get()
-                    vary = entryy.get()
+                        entryx.configure(state='normal')
+                        entryy.configure(state='normal')
 
-                    typewrite(f'({varx}, {vary})')
+                        entryx.delete(0, 'end')
+                        entryy.delete(0, 'end')
+                        entryx.insert('end', self.x)
+                        entryy.insert('end', self.y)
 
-            try:
-                if key.char in '123456789':
-                    entry_num = int(key.char)
+                        entryx.configure(state='readonly')
+                        entryy.configure(state='readonly')
 
-                    entryx_attr = f'entryx{entry_num}'
-                    entryy_attr = f'entryy{entry_num}'
+                        entries = getattr(self, 'entries', {})
+                        entries[entry_num] = (entryx, entryy)
+                        setattr(self, 'entries', entries)
 
-                    entryx = getattr(self, entryx_attr)
-                    entryy = getattr(self, entryy_attr)
+                        return
 
-                    entryx.configure(state='normal')
-                    entryy.configure(state='normal')
+                except:
+                    pass
+            else:
+                if isinstance(key, KeyCode):
+                    typed = str(key.vk)
+                    print(typed)
+                    if typed in ['97','98','99','100','101','102','103','104','105']:
+                        entry_num = str(int(typed) - 96)
 
-                    entryx.delete(0, 'end')
-                    entryy.delete(0, 'end')
-                    entryx.insert('end', self.x)
-                    entryy.insert('end', self.y)
+                        entryx_attr = f'entryx{entry_num}'
+                        entryy_attr = f'entryy{entry_num}'
 
-                    entryx.configure(state='readonly')
-                    entryy.configure(state='readonly')
+                        entryx = getattr(self, entryx_attr)
+                        entryy = getattr(self, entryy_attr)
 
-                    entries = getattr(self, 'entries', {})
-                    entries[entry_num] = (entryx, entryy)
-                    setattr(self, 'entries', entries)
+                        varx = entryx.get()
+                        vary = entryy.get()
 
-            except:
-                pass
+                        # Copiar o texto para a área de transferência
+                        pyperclip.copy(f'({varx}, {vary})')
+
+                        # Colar o conteúdo da área de transferência
+                        pyautogui.hotkey('ctrl', 'v')
 
         self.frame_master = CTkFrame(self.root, fg_color=self.root._fg_color)
-        self.frame_master.pack(pady=20)
+        self.frame_master.pack(pady=15)
 
         self.frame_axis_titles = CTkFrame(self.frame_master)
         self.frame_axis_titles.pack()
 
         self.frame_axis = CTkFrame(self.frame_master)
-        self.frame_axis.pack(pady=10)
+        self.frame_axis.pack(pady=5)
 
         self.label_name_x = CTkLabel(self.frame_axis_titles, text='Pos X')
         self.label_name_x.grid(row=1, column=1, padx=20)
@@ -95,14 +108,23 @@ class App:
         self.scroll_frame = CTkScrollableFrame(self.root, width=170, height=20)
         self.scroll_frame.pack()
 
+        self.frame_switch = CTkFrame(self.root, fg_color=self.root._fg_color)
+        self.frame_switch.pack(side=BOTTOM, pady = 5)
+
+        self.switch_top = CTkSwitch(self.frame_switch, text='Always on Top', command=self.always_on_top, button_color='#03fa6e', button_hover_color='#04a248', progress_color='#04a248')
+        self.switch_top.grid(row=1, column = 1, padx = 5)
+        self.option_menu = CTkOptionMenu(self.frame_switch, values=["Copy mode", "Paste mode"],text_color=self.root._fg_color, fg_color='#03fa6e', button_color='#03fa6e', button_hover_color='#04a248',font=("Arial", 12, "bold")
+                                                 )
+        self.option_menu.grid(row=1, column = 2, padx = 5)
+
+
         # Titles of columns --
         header_labels = ['Num', 'Pos x', 'Pos y']
         for i, label_text in enumerate(header_labels):
             label = CTkLabel(self.scroll_frame, text=label_text, font=("Arial", 12, "bold"))
             label.grid(row=0, column=i, padx=2, pady=2)
 
-        self.switch_top = CTkSwitch(self.root, text='Always on Top', command=self.always_on_top)
-        self.switch_top.pack(side=BOTTOM)
+
 
         # Copy 1 --
         self.lbl1 = CTkLabel(self.scroll_frame, text=f'{1}').grid(row=1, column=0)
@@ -221,3 +243,4 @@ class App:
 
 
 App()
+
