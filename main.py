@@ -1,6 +1,7 @@
 from customtkinter import *
 from tkinter import BOTTOM
-from pyautogui import position
+from pyautogui import position, hotkey
+from pyperclip import copy
 from pynput import keyboard
 from pynput.keyboard import KeyCode
 from PIL import Image
@@ -8,29 +9,35 @@ from PIL import Image
 
 class App:
     def __init__(self):
-        self.root = CTk(fg_color=('#171810'))
-        self.root._set_appearance_mode("dark")
-        self.root.geometry('300x350')
-        self.root.title('CoordiSpot')
-        self.root.iconbitmap('ico.ico')
-        self.root.attributes("-topmost", False)
-        self.root.wm_resizable(False, False)
+        """
+        Initialize the App class.
+        """
+        self.root = CTk(fg_color=('#171810')) #Instance of CustomTkinter
+        self.root._set_appearance_mode("dark") # Default appearance_mode
+        self.root.geometry('300x350') # Window size
+        self.root.title('CoordiSpot') # App Title
+        self.root.iconbitmap('ico.ico') # Load the Icon of the app
+        self.root.attributes("-topmost", False) # Sets False as default for "always in foreground"
+        self.root.wm_resizable(False, False) # Set False for window resizing
         # self.root.wm_overrideredirect(True)
-        self.main()
+        self.main() # Call the main page of app
         self.root.mainloop()
 
     def main(self):
+        """
+        Main function of the App class.
+        """
         self.x = ''
         self.y = ''
 
         def mouse_plot():
+            """
+            Update the mouse coordinates and display them on the labels.
+            """
             self.x, self.y = position()
             self.label_x.configure(text=f'X : {self.x}')
             self.label_y.configure(text=f'Y : {self.y}')
             self.label_x.after(10, mouse_plot)
-
-        import pyperclip
-        import pyautogui
 
         def on_key_press(key):
             option = self.option_menu.get()
@@ -67,7 +74,6 @@ class App:
             else:
                 if isinstance(key, KeyCode):
                     typed = str(key.vk)
-                    print(typed)
                     if typed in ['97','98','99','100','101','102','103','104','105']:
                         entry_num = str(int(typed) - 96)
 
@@ -81,10 +87,10 @@ class App:
                         vary = entryy.get()
 
                         # Copiar o texto para a área de transferência
-                        pyperclip.copy(f'({varx}, {vary})')
+                        copy(f'({varx}, {vary})')
 
                         # Colar o conteúdo da área de transferência
-                        pyautogui.hotkey('ctrl', 'v')
+                        hotkey('ctrl', 'v')
 
         self.logo = Image.open("logo.png")
         self.logo_image = CTkImage(self.logo, size=(200, 37))
