@@ -1,8 +1,9 @@
 from customtkinter import *
 from tkinter import BOTTOM
-from pyautogui import position, typewrite
+from pyautogui import position
 from pynput import keyboard
 from pynput.keyboard import KeyCode
+from PIL import Image
 
 
 class App:
@@ -11,6 +12,7 @@ class App:
         self.root._set_appearance_mode("dark")
         self.root.geometry('300x350')
         self.root.title('CoordiSpot')
+        self.root.iconbitmap('ico.ico')
         self.root.attributes("-topmost", False)
         self.root.wm_resizable(False, False)
         # self.root.wm_overrideredirect(True)
@@ -84,20 +86,16 @@ class App:
                         # Colar o conteúdo da área de transferência
                         pyautogui.hotkey('ctrl', 'v')
 
-        self.frame_master = CTkFrame(self.root, fg_color=self.root._fg_color)
-        self.frame_master.pack(pady=15)
+        self.logo = Image.open("logo.png")
+        self.logo_image = CTkImage(self.logo, size=(200, 37))
+        self.logo_label = CTkLabel(master=self.root, image=self.logo_image, text='')
+        self.logo_label.pack(pady = 5)
 
-        self.frame_axis_titles = CTkFrame(self.frame_master)
-        self.frame_axis_titles.pack()
+        self.frame_master = CTkFrame(self.root, fg_color=self.root._fg_color)
+        self.frame_master.pack(pady=3)
 
         self.frame_axis = CTkFrame(self.frame_master)
         self.frame_axis.pack(pady=5)
-
-        self.label_name_x = CTkLabel(self.frame_axis_titles, text='Pos X')
-        self.label_name_x.grid(row=1, column=1, padx=20)
-
-        self.label_name_y = CTkLabel(self.frame_axis_titles, text='Pos y')
-        self.label_name_y.grid(row=1, column=2, padx=20)
 
         self.label_x = CTkLabel(self.frame_axis, text='')
         self.label_x.grid(row=1, column=1, padx=20)
@@ -105,16 +103,37 @@ class App:
         self.label_y = CTkLabel(self.frame_axis, text='')
         self.label_y.grid(row=1, column=2, padx=20)
 
-        self.scroll_frame = CTkScrollableFrame(self.root, width=170, height=20)
+        self.scroll_frame = CTkScrollableFrame(self.root,
+                                               width=170,
+                                               height=20,
+                                               scrollbar_button_color='#03fa6e',
+                                               scrollbar_button_hover_color='#04a248')
         self.scroll_frame.pack()
 
         self.frame_switch = CTkFrame(self.root, fg_color=self.root._fg_color)
         self.frame_switch.pack(side=BOTTOM, pady = 5)
 
-        self.switch_top = CTkSwitch(self.frame_switch, text='Always on Top', command=self.always_on_top, button_color='#03fa6e', button_hover_color='#04a248', progress_color='#04a248')
+        self.switch_top = CTkSwitch(self.frame_switch,
+                                    text='Always on Top',
+                                    command=self.always_on_top,
+                                    button_color='#03fa6e',
+                                    button_hover_color='#04a248',
+                                    progress_color='#04a248',
+                                    font=("Arial", 12, "bold"))
         self.switch_top.grid(row=1, column = 1, padx = 5)
-        self.option_menu = CTkOptionMenu(self.frame_switch, values=["Copy mode", "Paste mode"],text_color=self.root._fg_color, fg_color='#03fa6e', button_color='#03fa6e', button_hover_color='#04a248',font=("Arial", 12, "bold")
-                                                 )
+
+        self.option_menu = CTkOptionMenu(self.frame_switch,
+                                         values=["Copy mode", "Paste mode"],
+                                         text_color=self.root._fg_color,
+                                         fg_color='#03fa6e',
+                                         button_color='#03fa6e',
+                                         button_hover_color='#04a248',
+                                         dropdown_fg_color='#03fa6e',
+                                         dropdown_hover_color='#04a248',
+                                         dropdown_text_color=self.root._fg_color,
+                                         dropdown_font=("Arial", 12, "bold"),
+                                         font=("Arial", 12, "bold"))
+
         self.option_menu.grid(row=1, column = 2, padx = 5)
 
 
@@ -138,7 +157,7 @@ class App:
         self.entryy1.configure(state='readonly')
 
         # Copy 2 --
-        self.lbl2 = CTkLabel(self.scroll_frame, text=f'{1}').grid(row=2, column=0)
+        self.lbl2 = CTkLabel(self.scroll_frame, text=f'{2}').grid(row=2, column=0)
         # X2
         self.entryx2 = CTkEntry(self.scroll_frame, width=65, height=30)
         self.entryx2.configure(state='readonly')
