@@ -3,7 +3,7 @@ from tkinter import BOTTOM
 from pyautogui import position, hotkey
 from pyperclip import copy
 from pynput import keyboard
-from pynput.keyboard import KeyCode
+from pynput.keyboard import KeyCode 
 from PIL import Image
 
 
