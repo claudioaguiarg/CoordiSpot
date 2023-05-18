@@ -11,9 +11,9 @@ CoordiSpot is a simple desktop application that allows you to quickly capture an
 
 ## Screenshots
 
-![CoordiSpot Screenshot](screens/scree1.png)
-![CoordiSpot Screenshot](screens/scree2.png)
-![CoordiSpot Screenshot](screens/scree3.png)
+![CoordiSpot Screenshot](screens/screen1.png)
+![CoordiSpot Screenshot](screens/screen2.png)
+![CoordiSpot Screenshot](screens/screen3.png)
 
 ## Installation
 
